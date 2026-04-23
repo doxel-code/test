@@ -1,84 +1,178 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Substrate Style Lab</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { margin: 0; background: #0a0a0c; overflow: hidden; font-family: 'JetBrains Mono', monospace; }
-        canvas { display: block; }
-        .content {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center; pointer-events: none;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pour Syntiche | 19h00</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display&family=Inter:wght@300;400;600&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: #050505;
+    color: white;
+    overflow: hidden;
+}
+
+.font-serif { font-family: 'Playfair Display', serif; }
+
+.gold-gradient {
+    background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.step { display: none; }
+.step-active {
+    display: flex;
+    animation: cinematicFade 1.5s ease;
+}
+
+@keyframes cinematicFade {
+    0% { opacity: 0; transform: scale(1.05); }
+    100% { opacity: 1; transform: scale(1); }
+}
+</style>
 </head>
+
 <body>
 
-    <div class="content">
-        <h1 id="main-title" class="text-white text-5xl md:text-7xl font-light tracking-[0.2em] opacity-0">
-            FLUXION<span class="text-blue-500">_</span>
-        </h1>
-        <p id="sub-text" class="text-zinc-500 mt-4 tracking-[0.5em] text-xs uppercase opacity-0">
-            Precision / Intelligence / Vision
-        </p>
+<!-- 🌌 Background -->
+<div id="particles-js" class="fixed inset-0 -z-10"></div>
+
+<!-- 🎶 Musique -->
+<audio id="bg-music" loop>
+    <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<!-- STEP 1 -->
+<section id="step1" class="step step-active min-h-screen flex-col items-center justify-center text-center p-6">
+    <h2 class="text-xs tracking-[0.5em] text-gray-500 mb-4">Message Prioritaire</h2>
+    <p class="text-2xl italic mb-12">Il est 19h… un peu tard peut-être, mais certains mots méritent de trouver leur moment parfait.</p>
+
+    <button onclick="startExperience()" class="px-8 py-4 border border-yellow-700 rounded-full hover:border-yellow-500 transition">
+        Entre dans l'instant
+    </button>
+</section>
+
+<!-- STEP 2 -->
+<section id="step2" class="step min-h-screen flex-col items-center justify-center">
+    <div class="w-64 h-[2px] bg-gray-800 relative overflow-hidden">
+        <div id="loader" class="absolute inset-0 bg-yellow-600 w-0 transition-all duration-[3000ms]"></div>
     </div>
+    <p id="loader-text" class="mt-6 text-xs text-yellow-500 animate-pulse">
+        Initialisation...
+    </p>
+</section>
 
-    <script>
-        // --- 1. CONFIGURATION THREE.JS (Le fond de particules) ---
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
+<!-- STEP 3 -->
+<section id="step3" class="step min-h-screen flex-col items-center justify-center text-center p-6">
+    <h1 class="font-serif text-5xl md:text-7xl mb-6">
+        Joyeux Anniversaire <span class="gold-gradient italic">Syntiche</span>
+    </h1>
 
-        // Création des particules
-        const particlesGeometry = new THREE.BufferGeometry();
-        const count = 3000;
-        const positions = new Float32Array(count * 3);
+    <p id="typed-text" class="max-w-xl text-gray-400 leading-relaxed"></p>
 
-        for(let i = 0; i < count * 3; i++) {
-            positions[i] = (Math.random() - 0.5) * 10;
+    <div class="mt-10 p-6 border border-white/10 rounded-xl">
+        <p class="text-yellow-500 text-sm mb-2">Teaser</p>
+        Ton cadeau est prêt, lui aussi a pris le temps qu’il fallait.
+        Il t’attend… et je te le remettrai la semaine prochaine.</p>
+    </div>
+</section>
+
+<script>
+
+// 🎬 Navigation
+function nextStep(step) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('step-active'));
+    document.getElementById('step'+step).classList.add('step-active');
+}
+
+// 🎧 Start
+function startExperience() {
+    document.getElementById('bg-music').play().catch(()=>{});
+    nextStep(2);
+
+    const loader = document.getElementById('loader');
+    const text = document.getElementById('loader-text');
+
+    setTimeout(()=> loader.style.width='100%',100);
+
+    const messages = [
+        "Capture de l'élégance...",
+        "Préparation du souhait...",
+        "Finalisation..."
+    ];
+
+    let i=0;
+    const interval = setInterval(()=>{
+        if(i<messages.length){
+            text.innerText = messages[i++];
         }
-        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    },1000);
 
-        const particlesMaterial = new THREE.PointsMaterial({
-            size: 0.015,
-            color: 0x555555,
-            transparent: true,
-            opacity: 0.8
-        });
+    setTimeout(()=>{
+        clearInterval(interval);
+        nextStep(3);
 
-        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
-        scene.add(particlesMesh);
-        camera.position.z = 3;
+        typeWriter(
+            document.getElementById('typed-text'),
+            "Je voulais prendre le temps de te souhaiter bien plus qu’une simple année de plus… mais une année à ta hauteur. Une année qui te ressemble : rare, lumineuse et pleine de promesses.
+            Et pour le retard… je ne plaide pas l’oubli, mais le choix d’un instant plus calme, plus vrai."
+        );
 
-        // --- 2. ANIMATION DU FOND ---
-        document.addEventListener('mousemove', (e) => {
-            const mouseX = (e.clientX / window.innerWidth) - 0.5;
-            const mouseY = (e.clientY / window.innerHeight) - 0.5;
-            gsap.to(particlesMesh.rotation, {
-                y: mouseX * 0.5,
-                x: -mouseY * 0.5,
-                duration: 2
-            });
-        });
+        setTimeout(launchFireworks, 800);
 
-        function animate() {
-            requestAnimationFrame(animate);
-            particlesMesh.rotation.y += 0.001;
-            renderer.render(scene, camera);
+    },3500);
+}
+
+// ⌨️ Typewriter
+function typeWriter(el, text, speed=40){
+    let i=0;
+    el.innerHTML="";
+    function typing(){
+        if(i<text.length){
+            el.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(typing,speed);
         }
-        animate();
+    }
+    typing();
+}
 
-        // --- 3. ANIMATION DU TEXTE (Style Substrate) ---
-        const tl = gsap.timeline();
-        tl.to("#main-title", { opacity: 1, duration: 2, ease: "expo.out" })
-          .to("#sub-text", { opacity: 1, duration: 1.5, y: -10, ease: "power2.out" }, "-=1");
+// 🎆 Fireworks
+function launchFireworks(){
+    const duration = 3 * 1000;
+    const end = Date.now() + duration;
 
-    </script>
+    (function frame(){
+        confetti({particleCount:5,angle:60,spread:55,origin:{x:0}});
+        confetti({particleCount:5,angle:120,spread:55,origin:{x:1}});
+        if(Date.now()<end){
+            requestAnimationFrame(frame);
+        }
+    })();
+}
+
+// 🌌 Particles
+particlesJS("particles-js", {
+  particles: {
+    number: { value: 60 },
+    color: { value: "#d4af37" },
+    shape: { type: "circle" },
+    opacity: { value: 0.3 },
+    size: { value: 2 },
+    move: { enable: true, speed: 1 }
+  }
+});
+
+</script>
+
 </body>
 </html>
